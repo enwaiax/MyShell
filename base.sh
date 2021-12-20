@@ -154,6 +154,7 @@ function install_oh_my_zsh() {
         apt install zsh -y
     fi
     chsh -s $(which zsh)
+    zsh
     echo "Start to install oh-my-zsh..."
     curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
     echo -e "${yellow}Downloading zsh-autosuggestions...${plain}\n"
@@ -162,7 +163,7 @@ function install_oh_my_zsh() {
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
     wget -N https://raw.githubusercontent.com/zp1998421/shell/master/robbyrussell.zsh-theme
     # enable plugins
-    a=$(grep "plugins=.*" ~/.zshrc | grep -v "rail.*" | cut -d "(" -f 2 | cut -d ")" -f 1)
+    a=$(grep "plugins=(.*)" ~/.zshrc | grep -v "rail.*" | cut -d "(" -f 2 | cut -d ")" -f 1)
     b='sudo extract git zsh-autosuggestions zsh-syntax-highlighting'
     sed -i "s/$a/$b/" ~/.zshrc
     # edit theme file
