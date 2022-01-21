@@ -161,16 +161,30 @@ function install_oh_my_zsh() {
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     echo -e "${yellow}Downloading zsh-syntax-highlighting...${plain}\n"
     git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
-    wget -N https://raw.githubusercontent.com/zp1998421/shell/master/robbyrussell.zsh-theme
     # enable plugins
     a=$(grep "plugins=(.*)" ~/.zshrc | grep -v "rail.*" | cut -d "(" -f 2 | cut -d ")" -f 1)
     b='sudo extract git zsh-autosuggestions zsh-syntax-highlighting'
     sed -i "s/$a/$b/" ~/.zshrc
-    # edit theme file
-    c=$(grep "ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE=.*" ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh | cut -d "'" -f 2 | cut -d "=" -f 2)
-    d='cyan'
-    sed -i "s/$c/$d/g" ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
-    mv ./robbyrussell.zsh-theme ~/.oh-my-zsh/themes/
+    # install pure theme
+    mkdir -p "$HOME/.zsh"
+    git clone https://github.com/sindresorhus/pure.git "$HOME/.zsh/pure"
+    echo "fpath+=$HOME/.zsh/pure" >>"$HOME/.zsh"
+    echo "autoload -U promptinit; promptinit" >>"$HOME/.zsh"
+    echo "prompt pure" >>"$HOME/.zsh"
     # reload shell
     source ~/.zshrc
+}
+
+function install_nvm() {
+    # check whether nvm has been installed
+    before_check_nvm_installed=$(
+        nvm --version &>/dev/null
+        echo $?
+    )
+    if [[ $before_check_nvm_installed -eq 0 ]]; then
+        echo "Nvm has been installed."
+        return
+    fi
+    echo "Start to install nvm..."
+    curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
 }
