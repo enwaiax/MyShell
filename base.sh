@@ -168,9 +168,9 @@ function install_oh_my_zsh() {
     # install pure theme
     mkdir -p "$HOME/.zsh"
     git clone https://github.com/sindresorhus/pure.git "$HOME/.zsh/pure"
-    echo "fpath+=$HOME/.zsh/pure" >>"$HOME/.zsh"
-    echo "autoload -U promptinit; promptinit" >>"$HOME/.zsh"
-    echo "prompt pure" >>"$HOME/.zsh"
+    echo "fpath+=$HOME/.zsh/pure" >>"$HOME/.zshrc"
+    echo "autoload -U promptinit; promptinit" >>"$HOME/.zshrc"
+    echo "prompt pure" >>"$HOME/.zshrc"
     # reload shell
     source ~/.zshrc
 }
