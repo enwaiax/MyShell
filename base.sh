@@ -80,6 +80,8 @@ install_base() {
             apt install python3-pip libxml2-dev libxslt1-dev zlib1g-dev libffi-dev libssl-dev -y
         fi
     fi
+    update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+    update-alternatives --install /usr/bin/python python /usr/bin/python3 1
 }
 
 function install_docker() {
@@ -106,6 +108,7 @@ function install_docker() {
         echo "Failed to install docker."
         exit 1
     fi
+    sudo apt install docker-compose-plugin -y >/dev/null
 }
 
 function install_docker_compose() {
@@ -187,4 +190,56 @@ function install_nvm() {
     fi
     echo "Start to install nvm..."
     curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash
+    load_nvm_env_str='export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" # This loads nvm"'
+    if [[ $(SHELL) == "/bin/zsh" ]]; then
+        echo -e "$load_nvm_env_str" >>~/.zshrc
+    elif [[ $(SHELL) == "/bin/bash" ]]; then
+        echo -e "$load_nvm_env_str" >>~/.bashrc
+    fi
+    exec $SHELL
+    nvm install --lts
+}
+
+function install_rclone() {
+    # check whether rclone has been installed
+    before_check_rclone_installed=$(
+        rclone --version &>/dev/null
+        echo $?
+    )
+    if [[ $before_check_rclone_installed -eq 0 ]]; then
+        echo "Rclone has been installed."
+        return
+    fi
+    echo "Start to install rclone..."
+    curl https://rclone.org/install.sh | sudo bash
+}
+
+function install_pyenv() {
+    # check whether pyenv has been installed
+    before_check_pyenv_installed=$(
+        pyenv --version &>/dev/null
+        echo $?
+    )
+    if [[ $before_check_pyenv_installed -eq 0 ]]; then
+        echo "Pyenv has been installed."
+        return
+    fi
+    echo "Start to install pyenv..."
+    sudo apt-get update && sudo apt-get install make build-essential libssl-dev zlib1g-dev \
+        libbz2-dev libreadline-dev libsqlite3-dev wget curl llvm \
+        libncursesw5-dev xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev -y >/dev/null
+    curl https://pyenv.run | bash
+    if [[ $(SHELL) == "/bin/zsh" ]]; then
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >>~/.zshrc
+        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >>~/.zshrc
+        echo 'eval "$(pyenv init -)"' >>~/.zshrc
+    elif [[ $(SHELL) == "/bin/bash" ]]; then
+        echo 'export PYENV_ROOT="$HOME/.pyenv"' >>~/.bashrc
+        echo 'command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"' >>~/.bashrc
+        echo 'eval "$(pyenv init -)"' >>~/.bashrc
+    fi
+    exec $SHELL
+    pyenv install 3.10.4
+    pyenv global 3.10.4
 }
