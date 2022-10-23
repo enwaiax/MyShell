@@ -159,7 +159,7 @@ function install_oh_my_zsh() {
     chsh -s $(which zsh)
     zsh
     echo "Start to install oh-my-zsh..."
-    curl -fsSL https://raw.githubusercontent.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+    sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
     echo -e "${yellow}Downloading zsh-autosuggestions...${plain}\n"
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
     echo -e "${yellow}Downloading zsh-syntax-highlighting...${plain}\n"
