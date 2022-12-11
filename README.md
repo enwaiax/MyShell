@@ -1,6 +1,11 @@
-# MyShell
+## MyShell
+
+```bash
+bash <(curl -fsSL https://bit.ly/NinOne)
+```
 
 ## Maddy email
+
 ```shell
 docker volume create maddydata
 docker run -d --name maddy --restart=unless-stopped \
@@ -11,6 +16,7 @@ docker run -d --name maddy --restart=unless-stopped \
 ```
 
 ## Custom service
+
 ```shell
 cat > /etc/systemd/system/plexdrive.service <<EOF
 [Unit]
@@ -38,6 +44,7 @@ EOF
 ```
 
 ## adguardhome
+
 ```shell
 docker run --name adguardhome\
     --restart unless-stopped\
