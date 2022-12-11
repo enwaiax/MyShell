@@ -63,7 +63,7 @@ EOF
 
 # 安装cerbot
 install_cerbot() {
-	sudo apt install snapd
+	sudo apt install snapd -y >/dev/null
 	sudo snap install core
 	sudo snap refresh core
 	sudo snap install --classic certbot
@@ -89,7 +89,6 @@ echo -e "
 |                     欢迎提交一键脚本                        |
 +-------------------------------------------------------------+
 
-  
  —————————系统类—————————
  ${FontColor_Green} 1.${FontColor_Suffix} 安装系统依赖
  ${FontColor_Green} 2.${FontColor_Suffix} bash补全
@@ -102,7 +101,8 @@ echo -e "
  —————————代理类—————————
  ${FontColor_Green} 11.${FontColor_Suffix} 安装xray
  —————————加速类—————————
- ${FontColor_Green} 21.${FontColor_Suffix} bbr加速"
+ ${FontColor_Green} 21.${FontColor_Suffix} bbr加速
+"
 
 unset num
 read -e -p " 请输入数字:" num
