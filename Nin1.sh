@@ -100,31 +100,31 @@ unset num
 read -e -p " 请输入数字:" num
 case "$num" in
 	1)
-	install_base()
+	install_base
 	;;
 	2)
-	bash_completion()
+	bash_completion
 	;;
 	3)
-	set_timezone()
+	set_timezone
 	;;
 	4)
-	change_system_log()
+	change_system_log
 	;;
 	5)
-	install_docker()
+	install_docker
 	;;
 	6)
-	install_fail2ban()
+	install_fail2ban
 	;;
 	7)
-	set_vim_modole()
+	set_vim_modole
 	;;	
 	11)
-	install_xray()
+	install_xray
 	;;
 	21)
-	set_bbr()
+	set_bbr
 	;;
 	*)
 	echo "请输入正确数字 [0-45]"
