@@ -14,7 +14,7 @@ else
 fi
 
 node_exporter_binary_url_prefix="https://github.com/prometheus/node_exporter/releases/download/v"
-node_exporter_version="1.3.1"
+node_exporter_version="1.5.0"
 node_exporter_binary="${node_exporter_binary_url_prefix}${node_exporter_version}/node_exporter-${node_exporter_version}.linux-${node_exporter_platform}.tar.gz"
 
 if [ -f /usr/local/bin/node_exporter ]; then
