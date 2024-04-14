@@ -57,3 +57,11 @@ docker run --name adguardhome\
     -p 5443:5443/tcp -p 5443:5443/udp\
     -d adguard/adguardhome
 ```
+
+## node_exporter
+```
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/Chasing66/MyShell/main/install_node_exportor.sh)"
+
+bash <(curl -fsSL https://raw.githubusercontent.com/Chasing66/MyShell/main/install_node_exportor.sh)
+```
+

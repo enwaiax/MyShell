@@ -76,7 +76,6 @@ install_oh_my_zsh() {
 	zsh --version &>/dev/null
 	if [[ $? -eq 0 ]]; then
 		echo "Zsh has been installed."
-		return
 	fi
 	echo "Start to install zsh..."
 	if [[ "$(
@@ -87,7 +86,7 @@ install_oh_my_zsh() {
 	else
 		sudo apt install -y zsh
 	fi
-	chsh -s /bin/zsh
+	chsh -s /bin/zsh "$USER"
 	echo "Start to install oh-my-zsh..."
 	sh -c "$(curl -fsSL https://install.ohmyz.sh/)"
 
