@@ -1,43 +1,61 @@
 #!/usr/bin/env bash
 set -e
 
-# check linux platform
-if [ "$(uname -m)" == "x86_64" ]; then
-    node_exporter_platform=amd64
-elif [ "$(uname -m)" == "aarch64" ]; then
-    node_exporter_platform=arm64
-elif [ "$(uname -m)" == "armv7l" ]; then
-    node_exporter_platform=arm
-else
-    echo "Unsupported platform"
+# Check if the script is running as root
+if [ "$(id -u)" != "0" ]; then
+    echo "This script must be run as root"
     exit 1
 fi
 
+# Detect platform architecture
+case "$(uname -m)" in
+x86_64)
+    node_exporter_platform=amd64
+    ;;
+aarch64)
+    node_exporter_platform=arm64
+    ;;
+armv7l)
+    node_exporter_platform=arm
+    ;;
+*)
+    echo "Unsupported platform"
+    exit 1
+    ;;
+esac
+
+# Set variables
+node_exporter_dir="/usr/local/bin"
+node_exporter_binary="${node_exporter_dir}/node_exporter"
 node_exporter_binary_url_prefix="https://github.com/prometheus/node_exporter/releases/download/v"
-node_exporter_version="1.5.0"
-node_exporter_binary="${node_exporter_binary_url_prefix}${node_exporter_version}/node_exporter-${node_exporter_version}.linux-${node_exporter_platform}.tar.gz"
+node_exporter_version="1.7.0"
+node_exporter_download_url="${node_exporter_binary_url_prefix}${node_exporter_version}/node_exporter-${node_exporter_version}.linux-${node_exporter_platform}.tar.gz"
+tmp_dir=$(mktemp -d)
 
-if [ -f /usr/local/bin/node_exporter ]; then
-    echo "node_exporter is already installed"
-    rm -rf /usr/local/bin/node_exporter
+# Check if Node Exporter is already installed
+if [ -f "${node_exporter_binary}" ]; then
+    echo "Node Exporter is already installed. Do you want to reinstall? (y/n)"
+    read -r reinstall
+    if [ "$reinstall" != "y" ]; then
+        exit 0
+    fi
 fi
 
-# download node_exporter binary and extract it
-wget -q ${node_exporter_binary} -O node_exporter.tar.gz
-tar -xzf node_exporter.tar.gz
-cp node_exporter-${node_exporter_version}.linux-${node_exporter_platform}/node_exporter /usr/local/bin/node_exporter
-rm -rf node_exporter.tar.gz node_exporter-${node_exporter_version}.linux-${node_exporter_platform}
-chmod +x /usr/local/bin/node_exporter
+# Download and extract Node Exporter
+echo "Downloading Node Exporter ${node_exporter_version} for ${node_exporter_platform}..."
+wget -q "${node_exporter_download_url}" -O "${tmp_dir}/node_exporter.tar.gz" || exit 1
+tar -xzf "${tmp_dir}/node_exporter.tar.gz" -C "${tmp_dir}" || exit 1
 
-# set prometheus runnable user
-if [ "$(id -u prometheus)" ]; then
-    echo "prometheus user exists"
-else
-    echo "create prometheus user"
-    useradd -s /sbin/nologin prometheus -M
+# Install Node Exporter
+install -m 755 "${tmp_dir}/node_exporter-${node_exporter_version}.linux-${node_exporter_platform}/node_exporter" "${node_exporter_binary}" || exit 1
+
+# Create Prometheus user if it doesn't exist
+if ! id -u prometheus >/dev/null 2>&1; then
+    echo "Creating 'prometheus' user..."
+    useradd -r -s /sbin/nologin prometheus
 fi
 
-# install node_exporter systemd service
+# Install node_exporter systemd service
 cat <<EOF >/etc/systemd/system/node_exporter.service
 [Unit]
 Description=Node Exporter
@@ -54,8 +72,11 @@ Restart=on-failure
 WantedBy=multi-user.target
 EOF
 
-# start node_exporter service
+# Reload systemd, enable and start Node Exporter service
 systemctl daemon-reload
 systemctl enable node_exporter
-systemctl start node_exporter
+systemctl restart node_exporter
 systemctl status node_exporter
+
+# Clean up temporary files
+rm -rf "${tmp_dir}"
