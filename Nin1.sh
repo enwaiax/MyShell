@@ -51,15 +51,23 @@ install_fail2ban() {
 }
 
 #7 修改vim模式
-set_vim_modole() {
-	sudo tee /etc/vim/vimrc.local <<EOF
-source \$(find / -name defaults.vim)
+set_vim_module() {
+    DEFAULTS_VIM_PATH=$(find /usr/share/vim/ -name defaults.vim 2>/dev/null)
+    
+    if [ -z "$DEFAULTS_VIM_PATH" ]; then
+        echo "defaults.vim 文件未找到"
+        return 1
+    fi
+
+    sudo tee /etc/vim/vimrc.local <<EOF
+source $DEFAULTS_VIM_PATH
 let skip_defaults_vim = 1
 if has('mouse')
     set mouse-=a
 endif
 EOF
 }
+
 
 #8 安装cerbot
 install_cerbot() {
@@ -179,7 +187,7 @@ case "$num" in
 	install_fail2ban
 	;;
 7)
-	set_vim_modole
+	set_vim_module
 	;;
 8)
 	install_cerbot
